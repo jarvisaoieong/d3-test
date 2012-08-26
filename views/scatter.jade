@@ -1,0 +1,42 @@
+extends layout
+
+block content
+  svg#chart
+
+block style
+  :stylus
+    svg
+      height 400px
+      width 600px
+
+block script
+  :coffeescript
+    nv.addGraph ->
+      chart = nv.models.scatterChart()
+        .showDistX(true)
+        .showDistY(true)
+        .color(d3.scale.category10().range())
+      chart.xAxis.tickFormat d3.format '.02f'
+      chart.yAxis.tickFormat d3.format '.02f'
+      d3.select('#chart')
+        .datum(data(4, 40))
+        .transition()
+        .duration(500)
+        .call(chart)
+      nv.utils.windowResize chart.update
+      chart
+
+    data = (groups, points) ->
+      data = []
+      shapes = ['circle', 'cross', 'triangle-up', 'triangle-down', 'diamond', 'square']
+      random = d3.random.normal()
+      for i in [0..groups]
+        data.push
+          key: "Group #{i}"
+          values: []
+        for j in [0..points]
+          data[i].values.push
+            x: random()
+            y: random()
+            size: Math.random()
+      data
